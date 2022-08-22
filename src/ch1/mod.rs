@@ -11,3 +11,6 @@ mod ex1_21_22;
 mod ex1_24;
 mod ex1_29;
 mod ex1_30;
+mod ex1_31;
+mod ex1_32;
+mod ex1_33;

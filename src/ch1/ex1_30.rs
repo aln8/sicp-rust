@@ -1,4 +1,3 @@
-use crate::utils::*;
 use num::traits::Zero;
 use std::fmt::Debug;
 use std::ops::Add;
@@ -17,7 +16,7 @@ where
     result
 }
 
-fn frac_pi_4_iter(end: f32) -> f32 {
+fn frac_pi_8_iter(end: f32) -> f32 {
     sum_iter(
         |a: f32| -> f32 { 1.0 / (a * (a + 2.0)) },
         1.0,
@@ -27,6 +26,6 @@ fn frac_pi_4_iter(end: f32) -> f32 {
 }
 
 #[test]
-fn test_frac_pi_4_iter() {
-    assert_eq!(0.39244908, frac_pi_4_iter(1000.0));
+fn test_frac_pi_8_iter() {
+    assert_eq!(0.39244908, frac_pi_8_iter(1000.0));
 }

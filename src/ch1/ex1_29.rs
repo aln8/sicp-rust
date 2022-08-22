@@ -43,7 +43,7 @@ where
     sum(f, a + dx / 2.0, |x: f32| -> f32 { x + dx }, b) * dx
 }
 
-fn frac_pi_4(end: f32) -> f32 {
+fn frac_pi_8(end: f32) -> f32 {
     sum(
         |a: f32| -> f32 { 1.0 / (a * (a + 2.0)) },
         1.0,
@@ -53,8 +53,8 @@ fn frac_pi_4(end: f32) -> f32 {
 }
 
 #[test]
-fn test_frac_pi_4() {
-    assert_eq!(0.39244908, frac_pi_4(1000.0));
+fn test_frac_pi_8() {
+    assert_eq!(0.39244908, frac_pi_8(1000.0));
 }
 
 #[test]
