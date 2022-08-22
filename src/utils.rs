@@ -1,8 +1,5 @@
-use num::{
-    traits::{Signed, Zero},
-    Integer,
-};
-use std::ops::{Mul, Rem};
+use num::traits::{Signed, Zero};
+use std::ops::{BitAnd, Mul};
 
 pub fn square<T>(a: T) -> T
 where
@@ -30,7 +27,7 @@ where
 
 pub fn is_even<T>(n: T) -> bool
 where
-    T: Rem<Output = T> + Integer + From<u8>,
+    T: BitAnd<Output = T> + From<u8> + PartialEq,
 {
-    n % T::from(2u8) == T::from(0u8)
+    n & T::from(1) != T::from(1)
 }

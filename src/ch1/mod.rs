@@ -1,1 +1,13 @@
-mod ch1_1;
+mod ex1_03;
+mod ex1_04;
+mod ex1_08;
+mod ex1_11;
+mod ex1_12;
+mod ex1_15;
+mod ex1_16;
+mod ex1_17;
+mod ex1_19;
+mod ex1_21_22;
+mod ex1_24;
+mod ex1_29;
+mod ex1_30;

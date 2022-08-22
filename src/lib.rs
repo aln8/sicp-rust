@@ -1,4 +1,6 @@
-mod ch1;
+#![feature(test)]
 
+extern crate test;
 mod base;
+mod ch1;
 mod utils;
