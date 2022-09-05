@@ -1,5 +1,11 @@
-use num::traits::{Signed, Zero};
-use std::ops::{Add, BitAnd, Div, Mul};
+use num::{
+    traits::{Signed, Zero},
+    Integer,
+};
+use std::{
+    ops::{Add, BitAnd, Div, Mul, Rem, Sub},
+    process::Output,
+};
 
 pub fn square<T>(a: T) -> T
 where
@@ -53,4 +59,17 @@ where
     T: Add<Output = T> + Div<Output = T> + From<i8>,
 {
     (a + b) / T::from(2)
+}
+
+pub fn gcd<T>(mut a: T, mut b: T) -> T
+where
+    T: Integer + Add<Output = T> + Rem<Output = T> + Zero + Copy,
+{
+    if a < b {
+        (a, b) = (b, a);
+    }
+    while b != T::zero() {
+        (a, b) = (b, a % b);
+    }
+    a
 }
