@@ -73,3 +73,23 @@ where
     }
     a
 }
+
+pub fn min<T>(a: T, b: T) -> T
+where
+    T: PartialOrd,
+{
+    if a > b {
+        return b;
+    }
+    a
+}
+
+pub fn max<T>(a: T, b: T) -> T
+where
+    T: PartialOrd,
+{
+    if a > b {
+        return a;
+    }
+    b
+}
