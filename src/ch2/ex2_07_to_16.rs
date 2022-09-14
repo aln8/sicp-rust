@@ -2,7 +2,7 @@ use std::ops::{Add, Div, Mul, Sub};
 
 use num::Signed;
 
-use crate::utils::*;
+use crate::utils::ops::*;
 
 #[derive(Debug, Clone, Copy)]
 struct Interval {

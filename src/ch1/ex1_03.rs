@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 
 pub fn ex1_03(a: i64, b: i64, c: i64) -> i64 {
     let (l1, l2) = larger_two_of_there(a, b, c);

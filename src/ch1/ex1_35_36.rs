@@ -1,6 +1,6 @@
 use num::Signed;
 
-use crate::utils::*;
+use crate::utils::ops::*;
 use std::ops::{Add, Mul, Sub};
 
 fn fixed_point<T, FT>(f: FT, mut now: T) -> T

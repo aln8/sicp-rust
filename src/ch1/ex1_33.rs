@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 use num::traits::{One, Zero};
 use std::collections::HashSet;
 use std::fmt::Debug;

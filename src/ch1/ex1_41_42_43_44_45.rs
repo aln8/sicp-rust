@@ -1,6 +1,6 @@
 use num::Signed;
 
-use crate::utils::*;
+use crate::utils::ops::*;
 use std::fmt::Debug;
 use std::ops::{Add, Div, Mul, Sub};
 use std::process::Output;

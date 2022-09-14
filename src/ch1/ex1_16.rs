@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 
 fn exp(b: i32, n: i32) -> i32 {
     exp_rec(1, b, n)

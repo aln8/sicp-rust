@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 use num::traits::One;
 use std::fmt::Debug;
 use std::ops::Mul;

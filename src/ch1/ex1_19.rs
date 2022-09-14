@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 
 fn russian_peasant_mul(mut a: i32, mut b: i32) -> i32 {
     let mut mul = 0;

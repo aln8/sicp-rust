@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 use num::traits::NumOps;
 use std::ops::{Add, Div, Mul, Sub};
 

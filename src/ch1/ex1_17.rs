@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 
 /// a + x * n = a + n of x sum
 /// if even(n) =   a + (n/2) of ((x) + (x))

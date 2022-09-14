@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::utils::ops::*;
 use rand::Rng;
 use test::Bencher;
 
