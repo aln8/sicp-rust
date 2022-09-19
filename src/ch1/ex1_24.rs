@@ -63,7 +63,6 @@ fn fermat_random_test(p: i64) -> bool {
     }
     let mut rng = rand::thread_rng();
     let a = rng.gen_range(2..p);
-    println!("{} {}", a, p);
     if fast_expmod(a, p - 1, p) != 1 {
         return false;
     }

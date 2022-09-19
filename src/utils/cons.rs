@@ -1,30 +1,47 @@
-use std::mem::replace;
+use std::{fmt::Debug, mem::replace, rc::Rc};
 
 // simple cons rust implementation
-struct Cons<T, F> {
-    car: T,
+#[derive(Debug)]
+pub struct Cons<T, F> {
     cdr: F,
+    car: T,
 }
 
-impl<T, F> Cons<T, F> {
+impl<T: Default, F: Default> Cons<T, F> {
     pub fn new(car: T, cdr: F) -> Cons<T, F> {
         Cons { car, cdr }
     }
 
-    pub fn cdr(&self) -> &F {
+    pub fn car(&mut self) -> T {
+        replace(&mut self.car, T::default())
+    }
+
+    pub fn cdr(&mut self) -> F {
+        replace(&mut self.cdr, F::default())
+    }
+
+    // pub fn cdr_swap(&mut self, cdr: F) -> F {
+    //     replace(&mut self.cdr, cdr)
+    // }
+
+    pub fn cdr_ref(&self) -> &F {
         &self.cdr
     }
 
-    pub fn mut_cdr(&mut self) -> &mut F {
+    pub fn cdr_mut(&mut self) -> &mut F {
         &mut self.cdr
     }
 
     pub fn set_cdr(&mut self, cdr: F) {
-        self.cdr = cdr
+        self.cdr = cdr;
     }
 
-    pub fn car(&self) -> &T {
+    pub fn car_ref(&self) -> &T {
         &self.car
+    }
+
+    pub fn car_mut(&mut self) -> &mut T {
+        &mut self.car
     }
 
     pub fn set_car(&mut self, car: T) {
@@ -34,67 +51,102 @@ impl<T, F> Cons<T, F> {
 
 #[test]
 fn test_cons() {
-    let pair = Cons::new(1, 2);
-    assert_eq!(&1, pair.car());
+    let mut pair = Cons::new(1, 2);
+    assert_eq!(1, pair.car());
 }
 
-enum List<T> {
+#[derive(Debug)]
+pub enum List<T: Default> {
     Cons(Cons<T, Box<List<T>>>),
     Nil,
 }
 
-impl<T> List<T> {
-    fn new(car: T) -> List<T> {
-        List::Cons(Cons::new(car, Box::new(List::Nil)))
+impl<T: Default> Default for List<T> {
+    fn default() -> Self {
+        List::Nil
+    }
+}
+
+impl<T: Default> List<T> {
+    pub fn new(car: T) -> Self {
+        Self::Cons(Cons::new(car, Box::new(Self::Nil)))
     }
 
-    fn car(&self) -> Option<&T> {
-        if let List::Cons(cons) = self {
+    pub fn car(self) -> Option<T> {
+        if let List::Cons(mut cons) = self {
             Some(cons.car())
         } else {
             None
         }
     }
 
-    fn set_car(&mut self, car: T) {
+    pub fn car_ref(&self) -> Option<&T> {
+        if let List::Cons(cons) = self {
+            Some(cons.car_ref())
+        } else {
+            None
+        }
+    }
+
+    pub fn car_mut(&mut self) -> Option<&mut T> {
+        if let List::Cons(cons) = self {
+            Some(cons.car_mut())
+        } else {
+            None
+        }
+    }
+
+    pub fn set_car(&mut self, car: T) {
         if let List::Cons(cons) = self {
             cons.set_car(car)
         }
     }
 
-    fn cdr(&self) -> &List<T> {
+    pub fn cdr(&mut self) -> List<T> {
         if let List::Cons(cons) = self {
-            cons.cdr()
+            *cons.cdr()
+        } else {
+            List::Nil
+        }
+    }
+
+    // pub fn cdr_swap(&mut self, cdr: List<T>) -> List<T> {
+    //     if let List::Cons(cons) = self {
+    //         *cons.cdr_swap(Box::new(cdr))
+    //     } else {
+    //         List::Nil
+    //     }
+    // }
+
+    pub fn cdr_ref(&self) -> &List<T> {
+        if let List::Cons(cons) = self {
+            &**cons.cdr_ref()
         } else {
             &List::Nil
         }
     }
 
-    fn set_cdr(&mut self, cdr: List<T>) {
+    pub fn cdr_mut(&mut self) -> &mut List<T> {
         if let List::Cons(cons) = self {
-            cons.set_cdr(Box::new(cdr))
-        }
-    }
-
-    fn next_node(&self) -> &List<T> {
-        if let List::Cons(cons) = self {
-            cons.cdr()
-        } else {
-            &List::Nil
-        }
-    }
-
-    fn mut_next_node(&mut self) -> &mut List<T> {
-        if let List::Cons(cons) = self {
-            cons.mut_cdr()
+            &mut **cons.cdr_mut()
         } else {
             self
+        }
+    }
+
+    pub fn set_cdr(&mut self, cdr: List<T>) {
+        if let List::Cons(cons) = self {
+            cons.set_cdr(Box::new(cdr));
         }
     }
 }
 
 #[macro_export]
 macro_rules! list {
+    ( $first:expr ) => (
+        List::new($first)
+    );
+
     ( $first:expr, $( $a:expr ),* ) => {
         {
             let mut head = List::new($first);
@@ -102,24 +154,21 @@ macro_rules! list {
             $(
                 let next = List::new($a);
                 cur.set_cdr(next);
-                cur = cur.mut_next_node();
+                cur = cur.cdr_mut();
             )*
             head
         }
     };
 }
 
-impl<'a, T> Iterator for &'a List<T>
-where
-    T: 'a + Copy,
-{
+impl<'a, T: 'a + Copy + Default> Iterator for &'a List<T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self {
             List::Cons(cons) => {
-                *self = cons.cdr();
-                return Some(cons.car());
+                *self = cons.cdr_ref();
+                return Some(cons.car_ref());
             }
             List::Nil => None,
         }
@@ -129,16 +178,16 @@ where
 #[test]
 fn test_list_macro() {
     let a = list!(1, 2, 3, 4);
-    assert_eq!(&1, a.car().unwrap());
-    assert_eq!(&2, a.next_node().car().unwrap());
-    assert_eq!(&3, a.next_node().next_node().car().unwrap());
-    assert_eq!(&4, a.next_node().next_node().next_node().car().unwrap());
+    assert_eq!(&1, a.car_ref().unwrap());
+    assert_eq!(&2, a.cdr_ref().car_ref().unwrap());
+    assert_eq!(&3, a.cdr_ref().cdr_ref().car_ref().unwrap());
+    assert_eq!(&4, a.cdr_ref().cdr_ref().cdr_ref().car_ref().unwrap());
     assert!(a
-        .next_node()
-        .next_node()
-        .next_node()
-        .next_node()
-        .car()
+        .cdr_ref()
+        .cdr_ref()
+        .cdr_ref()
+        .cdr_ref()
+        .car_ref()
         .is_none());
 }
 
@@ -146,21 +195,18 @@ fn test_list_macro() {
 fn test_list() {
     let test_list = [1, 3, 2, 4];
     let mut test_idx = 0;
-    let mut head = &List::Cons(Cons::new(
-        1,
-        Box::new(List::Cons(Cons::new(3, Box::new(List::Nil)))),
-    ));
+    let mut head = list!(1, 2, 3);
 
     // direct loop
-    while let List::Cons(cons) = head {
-        head = cons.cdr();
-        assert_eq!(&test_list[test_idx], cons.car());
+    while let List::Cons(mut cons) = head {
+        assert_eq!(&test_list[test_idx], cons.car_ref());
         test_idx += 1;
+        head = *cons.cdr();
     }
 
     // iteration method
     let mut test_idx = 0;
-    for val in head {
+    for val in &head {
         assert_eq!(&test_list[test_idx], val);
         test_idx += 1;
     }
