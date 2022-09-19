@@ -1,4 +1,4 @@
-use std::{fmt::Debug, mem::replace, rc::Rc};
+use std::{fmt::Debug, iter::FromIterator, mem::replace};
 
 // simple cons rust implementation
 #[derive(Debug)]
@@ -172,6 +172,33 @@ impl<'a, T: 'a + Copy + Default> Iterator for &'a List<T> {
             }
             List::Nil => None,
         }
+    }
+}
+
+impl<T: Copy + Default> Iterator for List<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            List::Cons(cons) => {
+                let car = *cons.car_ref();
+                *self = *cons.cdr();
+                return Some(car);
+            }
+            List::Nil => None,
+        }
+    }
+}
+
+impl<T: Default> FromIterator<T> for List<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut iter = iter.into_iter();
+        let mut dummy = List::new(T::default());
+        let mut last = &mut dummy;
+        while let Some(car) = iter.next() {
+            last.set_cdr(Self::new(car));
+            last = last.cdr_mut();
+        }
+        dummy.cdr()
     }
 }
 
