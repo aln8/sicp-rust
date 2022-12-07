@@ -3,21 +3,22 @@ use crate::{
     utils::{cons::*, ops::*},
 };
 
-fn square_list(l: List<i32>) -> List<i32> {
-    l.map(|x| square(x)).collect()
+fn square_list(l: List) -> List {
+    l.into_iter_downcast::<i32>().map(|x| square(x)).collect()
 }
 
 #[test]
 fn test_square_list() {
-    let mut test_result = list!(1, 4, 9);
+    let mut test_result = vec![1, 4, 9];
+    let mut idx = 0;
     for val in &square_list(list!(1, 2, 3)) {
-        assert_eq!(test_result.car_ref().unwrap(), val);
-        test_result = test_result.cdr();
+        assert_eq!(val, &test_result[idx]);
+        idx += 1;
     }
 }
 
-fn for_each(l: List<i32>, apply: impl FnMut(i32)) {
-    l.for_each(apply)
+fn for_each(l: List, apply: impl FnMut(i32)) {
+    l.into_iter_downcast::<i32>().for_each(apply)
 }
 
 #[test]

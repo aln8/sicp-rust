@@ -1,23 +1,25 @@
 use crate::{list, utils::cons::*};
 
 // section 1.2.2 counting change
-fn cc(amount: f64, coin: &List<f64>) -> i32 {
-    // recursive end
-    if amount == 0.0 {
-        return 1;
-    }
+fn cc(amount: f64, coin: &List) -> i32 {
+    fn cc_rec(amount: f64, coin: Option<&List>) -> i32 {
+        // recursive end
+        if amount == 0.0 {
+            return 1;
+        }
 
-    if amount < 0.0 {
-        return 0;
-    }
+        if amount < 0.0 {
+            return 0;
+        }
 
-    if let List::Nil = coin {
-        return 0;
-    }
+        if coin.is_none() {
+            return 0;
+        }
 
-    // recursion, tree
-    // (0 current coin recursion) + (1 current coin recursion)
-    cc(amount, coin.cdr_ref()) + cc(amount - coin.car_ref().unwrap(), coin)
+        cc_rec(amount, coin.unwrap().cdr_ref())
+            + cc_rec(amount - coin.unwrap().car_ref::<f64>().unwrap(), coin)
+    }
+    cc_rec(amount, Some(coin))
 }
 
 #[test]

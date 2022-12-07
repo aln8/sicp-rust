@@ -1,13 +1,14 @@
 use std::{
     fmt::{Debug, Display},
-    mem::replace,
+    mem::{replace, ManuallyDrop},
+    pin::Pin,
 };
 
 use crate::{list, utils::cons::*};
 
-fn last_pair<T: Default + Debug>(mut list: List<T>) -> List<T> {
-    while let List::Cons(cons) = list.cdr_ref() {
-        list = list.cdr();
+fn last_pair<T: Default + Debug>(mut list: List) -> List {
+    while let Some(next) = list.cdr() {
+        list = next;
     }
     list
 }
@@ -15,36 +16,36 @@ fn last_pair<T: Default + Debug>(mut list: List<T>) -> List<T> {
 #[test]
 fn test_last_pair() {
     let l = list!(1, 2, 3, 4);
-    assert_eq!(4, last_pair(l).car().unwrap());
+    assert_eq!(4, last_pair::<i32>(l).car().unwrap());
 }
 
-fn reverse<T: Copy + Default + Debug>(mut list: List<T>) -> List<T> {
-    let mut last: List<T> = List::Nil;
-    while let List::Cons(cons) = &list {
-        // change link, list cdr to last, hold current list cdr
-        let next = replace(list.cdr_mut(), last);
+fn reverse<T: Copy + Default + Debug>(mut list: List) -> List {
+    // keep last element, for each iteration:
+    // 1. next = cur.next
+    // 2. cur.next = last
+    // iter next
+    let mut last: Option<List> = None;
+    while let Some(next) = list.cdr_mut() {
+        // change link, list cdr to last, next
+        let next = list.set_cdr(last);
         // set head to last
-        last = list;
+        last = Some(list);
         // set list current cdr
-        list = next;
+        list = next.unwrap();
     }
-    last
+    list
 }
 
-fn reverse_rec<T: Copy + Default + Debug>(mut list: List<T>) -> List<T> {
+fn reverse_rec(mut list: &mut List) -> List {
     // if end, then new head
-    if let List::Nil = list.cdr_ref() {
-        return list;
+    if list.cdr_ref().is_none() {
+        return list.take();
     }
 
     // break link, list to Nil, hold next
-    let mut next = replace(list.cdr_mut(), List::Nil);
-    let mut next_cdr: *mut List<T> = &mut next;
-    let mut head = reverse_rec(next);
-    unsafe {
-        // set next.next to list
-        replace((*next_cdr).cdr_mut(), list);
-    }
+    let mut next = list.cdr().unwrap();
+    let mut head = reverse_rec(&mut next);
+    next.set_cdr(Some(list.take()));
     head
 }
 
@@ -54,20 +55,20 @@ fn test_reverse() {
 
     let test_list = [4, 3, 2, 1];
     let mut test_idx = 0;
-    for val in &reverse(l) {
-        assert_eq!(&test_list[test_idx], val);
+    for val in &reverse::<i32>(l) {
+        assert_eq!(*val, test_list[test_idx]);
         test_idx += 1;
     }
 }
 
 #[test]
 fn test_reverse_rec() {
-    let mut l = list!(1, 2, 3, 4);
+    let mut l = list!(1, 2, 3, 4, 5, 6, 7);
 
-    let test_list = [4, 3, 2, 1];
+    let test_list = [7, 6, 5, 4, 3, 2, 1];
     let mut test_idx = 0;
-    for val in &reverse_rec(l) {
-        assert_eq!(&test_list[test_idx], val);
+    for val in &reverse_rec(&mut l) {
+        assert_eq!(*val, test_list[test_idx]);
         test_idx += 1;
     }
 }
