@@ -1,6 +1,6 @@
 use std::mem::replace;
 
-use crate::{list, utils::cons::*};
+use crate::{list, utils::cons::*, utils::list::*};
 
 // since rust won't support any kind of dotted-tail notation
 // use rust macro for that achieve same grammar
@@ -34,12 +34,7 @@ macro_rules! same_parity {
 
 #[test]
 fn test_same_parity() {
-    let mut odd_result = list!(3, 5, 7);
-    for val in same_parity!(1, 2, 3, 4, 5, 6, 7, 8).iter() {
-        assert_eq!(val, odd_result.car_ref::<i32>().unwrap());
-        let next_test = odd_result.cdr();
-        if next_test.is_some() {
-            odd_result = next_test.unwrap();
-        }
-    }
+    let expect = list!(3, 5, 7);
+    let result = same_parity!(1, 2, 3, 4, 5, 6, 7, 8);
+    assert!(result.iter().eq(expect.iter()));
 }

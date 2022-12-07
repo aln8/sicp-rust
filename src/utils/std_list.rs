@@ -508,7 +508,6 @@ mod test {
         // Populate list
         list.push_front(1);
         list.push_front(2);
-        println!("{:?}", list);
         list.push_front(3);
 
         // Check normal removal
@@ -601,7 +600,6 @@ mod test {
 
         let mut iter = list.iter();
         assert_eq!(iter.next(), Some(&3));
-        println!("{:?}", iter);
         assert_eq!(iter.next_back(), Some(&1));
         assert_eq!(iter.next(), Some(&2));
         assert_eq!(iter.next_back(), None);
@@ -641,7 +639,6 @@ mod test {
         let mut iter = list.iter();
         list2.extend(iter);
         let mut into_iter = list2.into_iter();
-        println!("{:?}", into_iter);
         assert_eq!(into_iter.next_back(), Some(1));
         assert_eq!(into_iter.next(), Some(6));
         assert_eq!(into_iter.next_back(), Some(2));

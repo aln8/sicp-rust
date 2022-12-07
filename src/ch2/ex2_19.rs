@@ -1,4 +1,7 @@
-use crate::{list, utils::cons::*};
+use crate::{
+    list,
+    utils::{cons::*, list::List},
+};
 
 // section 1.2.2 counting change
 fn cc(amount: f64, coin: &List) -> i32 {

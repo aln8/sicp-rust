@@ -1,6 +1,6 @@
 use crate::{
     list,
-    utils::{cons::*, ops::*},
+    utils::{cons::*, list::List, ops::*},
 };
 
 fn square_list(l: List) -> List {
@@ -11,10 +11,7 @@ fn square_list(l: List) -> List {
 fn test_square_list() {
     let mut test_result = vec![1, 4, 9];
     let mut idx = 0;
-    for val in &square_list(list!(1, 2, 3)) {
-        assert_eq!(val, &test_result[idx]);
-        idx += 1;
-    }
+    assert!(&square_list(list!(1, 2, 3)).iter().eq(test_result.iter()));
 }
 
 fn for_each(l: List, apply: impl FnMut(i32)) {

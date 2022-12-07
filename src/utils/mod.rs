@@ -1,5 +1,6 @@
 pub mod base;
-#[macro_use]
 pub mod cons;
+// #[macro_use]
+pub mod list;
 pub mod ops;
 pub mod std_list;
