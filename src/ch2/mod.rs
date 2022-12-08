@@ -10,3 +10,4 @@ mod ex2_20;
 mod ex2_21_23;
 mod ex2_25_28;
 mod ex2_29;
+mod ex2_30_32;

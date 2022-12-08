@@ -161,6 +161,8 @@ impl<T: ConsAny> Extend<T> for List {
     }
 }
 
+#[derive(Debug)]
+
 pub struct Iter<'a> {
     car: Link,
     cdr: Link,
@@ -189,6 +191,8 @@ impl<'a> Iterator for Iter<'a> {
         cur
     }
 }
+
+#[derive(Debug)]
 
 pub struct IterDowncast<'a, T> {
     car: Link,
@@ -223,6 +227,7 @@ impl<'a, T: 'static> Iterator for IterDowncast<'a, T> {
     }
 }
 
+#[derive(Debug)]
 pub struct IterMut<'a> {
     car: Link,
     cdr: Link,
@@ -253,6 +258,7 @@ impl<'a> Iterator for IterMut<'a> {
     }
 }
 
+#[derive(Debug)]
 pub struct IntoIter {
     next: List,
 }
@@ -271,6 +277,7 @@ impl Iterator for IntoIter {
     }
 }
 
+#[derive(Debug)]
 pub struct IntoIterDowncast<T> {
     next: List,
     marker: PhantomData<T>,

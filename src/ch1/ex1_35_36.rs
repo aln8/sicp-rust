@@ -54,7 +54,7 @@ fn test_sqrt() {
 
 #[test]
 fn test_x_to_x() {
-    assert_eq!(4.5555363, x_to_x(1000));
+    assert_eq!(4.5555353, x_to_x(1000));
 }
 
 #[test]

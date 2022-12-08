@@ -186,20 +186,13 @@ impl Drop for Cons {
 impl PartialEq<Cons> for Cons {
     fn eq(&self, other: &Cons) -> bool {
         fn _eq(a: Option<&dyn ConsAny>, b: Option<&dyn ConsAny>) -> bool {
-            match a {
-                Some(a) => {
-                    if let Some(b) = b {
-                        return a.dyn_eq(b);
-                    }
-                    false
-                }
-                None => {
-                    if b.is_none() {
-                        return true;
-                    }
-                    false
-                }
+            if a.is_none() && b.is_none() {
+                return true;
             }
+            if a.is_none() || b.is_none() {
+                return false;
+            }
+            a.unwrap().dyn_eq(b.unwrap())
         }
         _eq(self.car_ref(), other.car_ref()) && _eq(self.cdr_ref(), other.cdr_ref())
     }
