@@ -8,7 +8,22 @@ pub struct List {
 }
 
 impl List {
-    pub fn new<T: ConsAny>(car: T) -> Self {
+    pub fn new<T: ConsAny>(mut car: T) -> Self {
+        // here need to handle if T is Box<dyn ConsAny>
+        // because if that, the result will be Box<Box<dyn ConsAny>>
+        // which will cause weird behavior, such as dyn_eq fail for T & Box<T>
+        if car
+            .as_ref_any()
+            .downcast_ref::<Box<dyn ConsAny>>()
+            .is_some()
+        {
+            let a = (Box::new(car) as Box<dyn Any>)
+                .downcast::<Box<dyn ConsAny>>()
+                .unwrap();
+            return Self {
+                head: Cons::new(Some(*a), None),
+            };
+        }
         Self {
             head: Cons::new(Some(Box::new(car)), None),
         }
@@ -62,6 +77,16 @@ impl List {
             list = list.cdr_mut().unwrap()
         }
         list
+    }
+
+    pub fn reverse(mut self) -> Self {
+        if self.cdr_ref().is_none() {
+            return self;
+        }
+        let next = self.cdr().unwrap();
+        let mut head = next.reverse();
+        head.tail().set_cdr(Some(self));
+        head
     }
 
     pub fn set_cdr(&mut self, cdr: Option<Self>) -> Option<Self> {
@@ -153,8 +178,9 @@ impl<T: ConsAny> FromIterator<T> for List {
 impl<T: ConsAny> Extend<T> for List {
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
         let mut tail = self.tail();
-        for item in iter {
-            let mut new_tail = Self::new(item);
+        let mut new_tail: List;
+        for mut item in iter {
+            new_tail = Self::new(item);
             tail.set_cdr(Some(new_tail));
             tail = tail.cdr_mut().unwrap();
         }

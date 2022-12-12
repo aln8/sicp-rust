@@ -44,12 +44,12 @@ where
 }
 
 impl dyn ConsAny {
-    fn cast_ref<T: 'static>(&self) -> Option<&T> {
+    pub fn cast_ref<T: 'static>(&self) -> Option<&T> {
         self.as_ref_any().downcast_ref()
     }
 
-    fn cast_mut<T: 'static>(&mut self) -> Option<&mut T> {
-        self.as_mut_any().downcast_mut::<T>()
+    pub fn cast_mut<T: 'static>(&mut self) -> Option<&mut T> {
+        self.as_mut_any().downcast_mut()
     }
 }
 

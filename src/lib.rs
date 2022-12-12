@@ -6,6 +6,7 @@
 #![feature(const_trait_impl)]
 #![feature(const_mut_refs)]
 #![feature(const_replace)]
+#![feature(type_name_of_val)]
 
 extern crate test;
 
