@@ -3,18 +3,18 @@ use crate::{
     utils::{cons::Cons, list::List},
 };
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 struct MobileList {
     data: List,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum StructureList {
     MobileList(MobileList),
     Weight(i32),
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 struct BranchList {
     data: List,
 }
@@ -136,18 +136,18 @@ fn test_list_balance() {
     assert_eq!(true, m.balanced());
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 struct MobileCons {
     data: Cons,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum StructureCons {
     MobileList(MobileCons),
     Weight(i32),
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 struct BranchCons {
     data: Cons,
 }

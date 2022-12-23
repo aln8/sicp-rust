@@ -17,11 +17,11 @@ impl List {
             .downcast_ref::<Box<dyn ConsAny>>()
             .is_some()
         {
-            let a = (Box::new(car) as Box<dyn Any>)
+            let a = *(Box::new(car) as Box<dyn Any>)
                 .downcast::<Box<dyn ConsAny>>()
                 .unwrap();
             return Self {
-                head: Cons::new(Some(*a), None),
+                head: Cons::new(Some(a), None),
             };
         }
         Self {
@@ -129,6 +129,12 @@ impl List {
             next: self,
             marker: PhantomData,
         }
+    }
+}
+
+impl Clone for List {
+    fn clone(&self) -> Self {
+        self.iter().map(|item| item.dyn_clone()).collect()
     }
 }
 
@@ -376,5 +382,32 @@ mod test {
         assert_eq!(*into.next().unwrap(), 3);
         assert_eq!(*into.next().unwrap(), 4);
         assert_eq!(into.next(), None);
+    }
+
+    #[test]
+    fn test_extends() {
+        let mut l = list!(1, 2, 3);
+        let expect = vec![1, 2, 3];
+        let default = List::default();
+        l.extend(default.into_iter());
+        assert!(l.iter().eq(expect.iter()));
+    }
+
+    #[test]
+    fn test_clone() {
+        let mut l = list!(1, 2, 3, list!(4));
+        assert_eq!(1, l.car::<i32>().unwrap());
+        l = l.cdr().unwrap();
+        assert_eq!(2, l.car::<i32>().unwrap());
+        l = l.cdr().unwrap();
+        let mut l2 = l.clone();
+
+        assert_eq!(3, l.car::<i32>().unwrap());
+        l = l.cdr().unwrap();
+        assert_eq!(4, l.car::<List>().unwrap().car::<i32>().unwrap());
+
+        assert_eq!(3, l2.car::<i32>().unwrap());
+        l2 = l2.cdr().unwrap();
+        assert_eq!(4, l2.car::<List>().unwrap().car::<i32>().unwrap());
     }
 }

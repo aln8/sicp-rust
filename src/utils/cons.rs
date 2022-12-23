@@ -1,6 +1,7 @@
 use std::{any::Any, fmt::Debug, marker::PhantomData, ptr::NonNull};
 
 pub trait ConsAny: Any + Debug {
+    fn dyn_clone(&self) -> Box<dyn ConsAny>;
     fn as_ref_any(&self) -> &dyn Any;
     fn as_mut_any(&mut self) -> &mut dyn Any;
     fn dyn_eq(&self, other: &dyn ConsAny) -> bool;
@@ -14,7 +15,7 @@ impl PartialEq for dyn ConsAny {
 
 impl<T> PartialEq<T> for dyn ConsAny
 where
-    T: Debug + PartialEq + 'static,
+    T: Clone + Debug + PartialEq + 'static,
 {
     fn eq(&self, other: &T) -> bool {
         self.dyn_eq(other)
@@ -23,10 +24,20 @@ where
 
 impl Eq for dyn ConsAny {}
 
+impl Clone for Box<dyn ConsAny> {
+    fn clone(&self) -> Self {
+        (&**self).dyn_clone()
+    }
+}
+
 impl<T> ConsAny for T
 where
-    T: Debug + PartialEq + 'static,
+    T: Debug + Clone + PartialEq + 'static,
 {
+    fn dyn_clone(&self) -> Box<dyn ConsAny> {
+        Box::new(self.clone())
+    }
+
     fn as_ref_any(&self) -> &dyn Any {
         self
     }
@@ -55,7 +66,7 @@ impl dyn ConsAny {
 
 pub type Link = Option<NonNull<dyn ConsAny>>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Cons {
     pub car: Link,
     pub cdr: Link,
